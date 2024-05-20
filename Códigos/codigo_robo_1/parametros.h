@@ -1,8 +1,6 @@
 // Arquivo de parâmetros utilizados no código
 // Criado para deixar o código + organizado
 
-
-
 #ifndef parametros_h
 
 #define parametros_h
@@ -15,8 +13,7 @@
 #define SENTIDO_MOTOR_DIREITO 26
 #define VELOCIDADE_MOTOR_DIREITO 25 
 
-#define PINO_ARMA_1 27
-#define PINO_ARMA_2 14
+#define PINO_ARMA 27
 
 // Comportamento natural do controle em ambos os analógicos
 // Cima - Baixo +
