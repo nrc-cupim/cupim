@@ -8,15 +8,14 @@ void onConnectedController(ControllerPtr ctl) {
 
   for (int i = 0; i < BP32_MAX_GAMEPADS; i++) {
     if (myControllers[i] == nullptr) {
-      Serial.println("AVISO: controle conectado.");
+      Serial.println("\nAVISO: controle conectado.");
       myControllers[i] = ctl;
       foundEmptySlot = true;
 
       uint8_t addr[6];
       for (int i = 0; i < 6; i++)
         addr[i] = ctl->getProperties().btaddr[i];
-      Serial.printf("Endereco MAC: %x:%x:%x:%x:%x:%x", addr[0], addr[1], addr[2], addr[3], addr[4], addr[5]);
-
+      Serial.printf("Endereco MAC do controle: %x:%x:%x:%x:%x:%x\n\n", addr[0], addr[1], addr[2], addr[3], addr[4], addr[5]);
       break;
     }
   }
