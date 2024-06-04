@@ -20,16 +20,16 @@ void setup() {
   sscanf_bd_addr(endereco_mac_controle_1, endereco_1);
 
   // Remove endereço bluetooth da lista de permissão
-   uni_bt_allowlist_remove_addr(endereco_1);
+  // uni_bt_allowlist_remove_addr(endereco_1);
 
   // Adiciona endereço à lista de permissão.
-  //uni_bt_allowlist_add_addr(endereco_1);
-
-  // Habilita lista de permissão.
-  //uni_bt_allowlist_set_enabled(true);
+  uni_bt_allowlist_add_addr(endereco_1);
 
   // Desabilita lista de permissão.
-  uni_bt_allowlist_set_enabled(false);
+  // uni_bt_allowlist_set_enabled(false);
+
+  // Habilita lista de permissão.
+  uni_bt_allowlist_set_enabled(true);
 }
 
 void loop() {
