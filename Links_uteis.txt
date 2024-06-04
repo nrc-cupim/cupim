@@ -1,0 +1,18 @@
+Bilioteca controle:	https://bluepad32.readthedocs.io/en/latest/
+			https://github.com/ricardoquesada/bluepad32
+
+Tutorial filtro MAC controle: https://bluepad32.readthedocs.io/en/latest/FAQ/#how-to-pair-just-one-controller-to-one-particular-board
+
+Driver ESP32: https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers
+
+Arduino: https://www.arduino.cc/en/software
+
+OnShape: https://www.onshape.com/en/
+
+Easy EDA: https://easyeda.com/pt
+
+Datasheet ponte H: https://www.ti.com/lit/ds/symlink/drv8833.pdf?ts=1716022162879
+
+Datasheet TIP 122: https://www.st.com/resource/en/datasheet/tip120.pdf
+
+
