@@ -19,7 +19,7 @@
 const int32_t minAnalogR_Y = -508, centerAnalogR_Y = 0, maxAnalogR_Y = 512;  // Valores reais * -1
 const int32_t minAnalogL_X = -512, centerAnalogL_X = 0, maxAnalogL_X = 508;
 
-const int32_t toleranciaAnalogico = 20;  // zona morta do controle
+const int32_t toleranciaAnalogico = 10;  // zona morta do controle
 
 // Pino de controle em HIGH: 255 (menor velocidade) a 0 (maior velocidade)
 // Pino de controle em LOW: 0 (menor velocidade) a 255 (maior velocidade)
