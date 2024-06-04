@@ -86,13 +86,13 @@ void processControllers() {
         // Se L1 for presionado, desliga arma.
         if (botoesPressionados == 0x0010) {
           digitalWrite(PINO_ARMA, LOW);
-          Serial.print("Arma desligada ");
+          Serial.print("Arma desligada\n");
         }
 
         // Se R1 for presionado, liga arma.
         else if (botoesPressionados == 0x0020) {
           digitalWrite(PINO_ARMA, HIGH);
-          Serial.print("Arma ligada ");
+          Serial.print("Arma ligada\n");
         }
 
         // Lê valor em Y do analógico direito (R-right).
