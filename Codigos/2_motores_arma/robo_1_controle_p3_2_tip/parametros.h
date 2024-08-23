@@ -10,6 +10,7 @@
 #define SENTIDO_MOTOR_DIREITO 33
 #define VELOCIDADE_MOTOR_DIREITO 32
 
+// Definindo pinos de controle da arma
 #define PINO_ARMA1 27
 #define PINO_ARMA2 14
 
