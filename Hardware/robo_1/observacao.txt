@@ -1,0 +1,1 @@
+No diagrama, ao invés de se utilizar um elemento ESP32, assim como no diagrama do robô 2, utilizou-se alguns conectores para simular as conexões dos componentes com o controlador. Isso foi necessário para facilitar a construção do board.
