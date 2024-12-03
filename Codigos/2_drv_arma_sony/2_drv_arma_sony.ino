@@ -5,7 +5,11 @@ ControllerPtr myControllers[BP32_MAX_GAMEPADS];
 bool roboLigado;
 
 void desligaRobo() {
-  digitalWrite(PINO_ARMA, LOW);
+  digitalWrite(SENTIDO_ARMA1, LOW);
+  analogWrite(VELOCIDADE_ARMA1, 0);
+
+  digitalWrite(SENTIDO_ARMA2, LOW);
+  analogWrite(VELOCIDADE_ARMA2, 0);
 
   digitalWrite(SENTIDO_MOTOR_ESQUERDO, LOW);
   analogWrite(VELOCIDADE_MOTOR_ESQUERDO, 0);
@@ -83,15 +87,29 @@ void processControllers() {
 
         uint16_t botoesPressionados = myController->buttons();
 
-        // Se L1 for presionado, desliga arma.
+        // Se L1 for presionado, desliga motores da arma.
         if (botoesPressionados == 0x0010) {
-          digitalWrite(PINO_ARMA, LOW);
+          digitalWrite(SENTIDO_ARMA1, LOW);
+          analogWrite(VELOCIDADE_ARMA1, 0);
+
+          digitalWrite(SENTIDO_ARMA2, LOW);
+          analogWrite(VELOCIDADE_ARMA2, 0);
+
           Serial.print("Arma desligada\n");
         }
 
-        // Se R1 for presionado, liga arma.
+        // Se R1 for presionado, liga motores da arma.
         else if (botoesPressionados == 0x0020) {
-          digitalWrite(PINO_ARMA, HIGH);
+          digitalWrite(SENTIDO_ARMA1, LOW);
+          analogWrite(VELOCIDADE_ARMA1, 255);
+
+          digitalWrite(SENTIDO_ARMA2, HIGH);
+          analogWrite(VELOCIDADE_ARMA2, 0);
+
+          // Ao acoplar os motores na arma, deve-se atentar para o sentido de rotação de cada um.
+          // Deve-se garantir que eles não rodem em sentidos opostos. 
+          // Caso contrário, um motor servirá de carga para o outro, o que danificará os componentes
+
           Serial.print("Arma ligada\n");
         }
 
@@ -241,15 +259,19 @@ void setup() {
   // Desparea os controles que haviam sido conectados anteriormente.
   BP32.forgetBluetoothKeys();
 
-  // Configura pinos da ESP32 como saída.
+  // Configura pinos da ESP32 para controle dos motores de arma.
+  pinMode(SENTIDO_ARMA1, OUTPUT);
+  pinMode(VELOCIDADE_ARMA1, OUTPUT);
 
+  pinMode(SENTIDO_ARMA2, OUTPUT);
+  pinMode(VELOCIDADE_ARMA2, OUTPUT);
+
+// Configura pinos da ESP32 para controle dos motores de locomoção.
   pinMode(SENTIDO_MOTOR_ESQUERDO, OUTPUT);
   pinMode(VELOCIDADE_MOTOR_ESQUERDO, OUTPUT);
 
   pinMode(SENTIDO_MOTOR_DIREITO, OUTPUT);
   pinMode(VELOCIDADE_MOTOR_DIREITO, OUTPUT);
-
-  pinMode(PINO_ARMA, OUTPUT);
 
   // Desliga movimentação e arma do robô.
   desligaRobo();
