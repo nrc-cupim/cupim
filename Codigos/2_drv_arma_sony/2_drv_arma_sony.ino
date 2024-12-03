@@ -101,10 +101,10 @@ void processControllers() {
         // Se R1 for presionado, liga motores da arma.
         else if (botoesPressionados == 0x0020) {
           digitalWrite(SENTIDO_ARMA1, LOW);
-          analogWrite(VELOCIDADE_ARMA1, 255);
+          analogWrite(VELOCIDADE_ARMA1, 200);
 
           digitalWrite(SENTIDO_ARMA2, HIGH);
-          analogWrite(VELOCIDADE_ARMA2, 0);
+          analogWrite(VELOCIDADE_ARMA2, 55);
 
           // Ao acoplar os motores na arma, deve-se atentar para o sentido de rotação de cada um.
           // Deve-se garantir que eles não rodem em sentidos opostos. 

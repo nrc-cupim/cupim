@@ -4,17 +4,17 @@
 
 #include <Arduino.h>
 
-#define SENTIDO_MOTOR_ESQUERDO 13
-#define VELOCIDADE_MOTOR_ESQUERDO 12
+#define SENTIDO_ARMA2 13
+#define VELOCIDADE_ARMA2 12
 
-#define SENTIDO_ARMA2 14
-#define VELOCIDADE_ARMA2 27
+#define SENTIDO_MOTOR_ESQUERDO 14
+#define VELOCIDADE_MOTOR_ESQUERDO 27
 
-#define SENTIDO_ARMA1 26
-#define VELOCIDADE_ARMA1 25
+#define SENTIDO_MOTOR_DIREITO 26
+#define VELOCIDADE_MOTOR_DIREITO 25
 
-#define SENTIDO_MOTOR_DIREITO 33
-#define VELOCIDADE_MOTOR_DIREITO 32
+#define SENTIDO_ARMA1 33
+#define VELOCIDADE_ARMA1 32
 
 // Comportamento natural do controle em ambos os analógicos
 // Cima - Baixo +
