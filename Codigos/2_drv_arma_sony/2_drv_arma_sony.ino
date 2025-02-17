@@ -5,11 +5,11 @@ ControllerPtr myControllers[BP32_MAX_GAMEPADS];
 bool roboLigado;
 
 void desligaRobo() {
-  digitalWrite(SENTIDO_ARMA1, LOW);
-  analogWrite(VELOCIDADE_ARMA1, 0);
+  analogWrite(PINO1_ARMA1, 0);
+  analogWrite(PINO2_ARMA1, 0);
 
-  digitalWrite(SENTIDO_ARMA2, LOW);
-  analogWrite(VELOCIDADE_ARMA2, 0);
+  analogWrite(PINO1_ARMA2, 0);
+  analogWrite(PINO2_ARMA2, 0);
 
   digitalWrite(SENTIDO_MOTOR_ESQUERDO, LOW);
   analogWrite(VELOCIDADE_MOTOR_ESQUERDO, 0);
@@ -42,8 +42,6 @@ void onConnectedController(ControllerPtr ctl) {
     Serial.println("AVISO: Reinicie a ESP32 e tente novamente.");
   }
 }
-
-
 
 void onDisconnectedController(ControllerPtr ctl) {
   for (int i = 0; i < BP32_MAX_GAMEPADS; i++) {
@@ -87,30 +85,37 @@ void processControllers() {
 
         uint16_t botoesPressionados = myController->buttons();
 
-        // Se L1 for presionado, desliga motores da arma.
-        if (botoesPressionados == 0x0010) {
-          digitalWrite(SENTIDO_ARMA1, LOW);
-          analogWrite(VELOCIDADE_ARMA1, 0);
-
-          digitalWrite(SENTIDO_ARMA2, LOW);
-          analogWrite(VELOCIDADE_ARMA2, 0);
-
+        // Se TRIÂNGULO for presionado, desliga motores da arma.
+        if (botoesPressionados == 0x0008) {
           Serial.print("Arma desligada\n");
+
+          analogWrite(PINO1_ARMA1, 0);
+          analogWrite(PINO2_ARMA1, 0);
+
+          analogWrite(PINO1_ARMA2, 0);
+          analogWrite(PINO2_ARMA2, 0);
         }
 
-        // Se R1 for presionado, liga motores da arma.
-        else if (botoesPressionados == 0x0020) {
-          digitalWrite(SENTIDO_ARMA1, LOW);
-          analogWrite(VELOCIDADE_ARMA1, 200);
+        //Se BOLINHA for pressionado, roda arma para um lado
+        if (botoesPressionados == 0x0002) {
+          Serial.print("Arma Sentido 1\n");
 
-          digitalWrite(SENTIDO_ARMA2, HIGH);
-          analogWrite(VELOCIDADE_ARMA2, 55);
+          analogWrite(PINO1_ARMA1, 0);
+          analogWrite(PINO2_ARMA1, maxPWM);
 
-          // Ao acoplar os motores na arma, deve-se atentar para o sentido de rotação de cada um.
-          // Deve-se garantir que eles não rodem em sentidos opostos. 
-          // Caso contrário, um motor servirá de carga para o outro, o que danificará os componentes
+          analogWrite(PINO1_ARMA2, maxPWM);  // para rodar pro outro lado
+          analogWrite(PINO2_ARMA2, 0);
+        }
 
-          Serial.print("Arma ligada\n");
+        // Se QUADRADO for pressionado, roda arma para o outro lado
+        else if (botoesPressionados == 0x0004) {
+          Serial.print("Arma Sentido 2\n");
+
+          analogWrite(PINO1_ARMA1, maxPWM);
+          analogWrite(PINO2_ARMA1, 0);
+
+          analogWrite(PINO1_ARMA2, 0);  // para rodar pro outro lado
+          analogWrite(PINO2_ARMA2, maxPWM);
         }
 
         // Lê valor em Y do analógico direito (R-right).
@@ -260,13 +265,13 @@ void setup() {
   BP32.forgetBluetoothKeys();
 
   // Configura pinos da ESP32 para controle dos motores de arma.
-  pinMode(SENTIDO_ARMA1, OUTPUT);
-  pinMode(VELOCIDADE_ARMA1, OUTPUT);
+  pinMode(PINO1_ARMA1, OUTPUT);
+  pinMode(PINO2_ARMA1, OUTPUT);
 
-  pinMode(SENTIDO_ARMA2, OUTPUT);
-  pinMode(VELOCIDADE_ARMA2, OUTPUT);
+  pinMode(PINO1_ARMA2, OUTPUT);
+  pinMode(PINO2_ARMA2, OUTPUT);
 
-// Configura pinos da ESP32 para controle dos motores de locomoção.
+  // Configura pinos da ESP32 para controle dos motores de locomoção.
   pinMode(SENTIDO_MOTOR_ESQUERDO, OUTPUT);
   pinMode(VELOCIDADE_MOTOR_ESQUERDO, OUTPUT);
 
