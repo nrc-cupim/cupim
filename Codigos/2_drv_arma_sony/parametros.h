@@ -4,17 +4,17 @@
 
 #include <Arduino.h>
 
-#define SENTIDO_ARMA2 13
-#define VELOCIDADE_ARMA2 12
+#define PINO1_ARMA2 13
+#define PINO2_ARMA2 12
 
 #define SENTIDO_MOTOR_ESQUERDO 14
 #define VELOCIDADE_MOTOR_ESQUERDO 27
 
-#define SENTIDO_MOTOR_DIREITO 26
-#define VELOCIDADE_MOTOR_DIREITO 25
+#define SENTIDO_MOTOR_DIREITO 25
+#define VELOCIDADE_MOTOR_DIREITO 26
 
-#define SENTIDO_ARMA1 33
-#define VELOCIDADE_ARMA1 32
+#define PINO1_ARMA1 33
+#define PINO2_ARMA1 32
 
 // Comportamento natural do controle em ambos os analógicos
 // Cima - Baixo +
@@ -28,6 +28,6 @@ const int32_t toleranciaAnalogico = 10;  // zona morta do controle
 // Pino de controle em HIGH: 255 (menor velocidade) a 0 (maior velocidade)
 // Pino de controle em LOW: 0 (menor velocidade) a 255 (maior velocidade)
 
-const int minPWM = 0, maxPWM = 255;
+const int minPWM = 0, maxPWM = 200;  // valores limite para o PWM da ESP32
 
 #endif
