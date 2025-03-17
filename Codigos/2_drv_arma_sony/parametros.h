@@ -4,17 +4,17 @@
 
 #include <Arduino.h>
 
-#define PINO1_ARMA2 13
-#define PINO2_ARMA2 12
+#define PINO_1_ARMA2 13
+#define PINO_2_ARMA2 12
 
-#define SENTIDO_MOTOR_ESQUERDO 14
-#define VELOCIDADE_MOTOR_ESQUERDO 27
+#define PINO_1_MOTOR_ESQUERDO 14
+#define PINO_2_MOTOR_ESQUERDO 27
 
-#define SENTIDO_MOTOR_DIREITO 25
-#define VELOCIDADE_MOTOR_DIREITO 26
+#define PINO_1_MOTOR_DIREITO 25
+#define PINO_2_MOTOR_DIREITO 26
 
-#define PINO1_ARMA1 33
-#define PINO2_ARMA1 32
+#define PINO_1_ARMA1 33
+#define PINO_2_ARMA1 32
 
 // Comportamento natural do controle em ambos os analógicos
 // Cima - Baixo +
