@@ -4,11 +4,11 @@
 
 #include <Arduino.h>
 
-#define SENTIDO_MOTOR_ESQUERDO 33
-#define VELOCIDADE_MOTOR_ESQUERDO 32
+#define PINO_1_MOTOR_ESQUERDO 33
+#define PINO_2_MOTOR_ESQUERDO 32
 
-#define SENTIDO_MOTOR_DIREITO 26
-#define VELOCIDADE_MOTOR_DIREITO 25
+#define PINO_1_MOTOR_DIREITO 26
+#define PINO_2_MOTOR_DIREITO 25
 
 #define PINO_ARMA 14
 
@@ -24,6 +24,6 @@ const int32_t toleranciaAnalogico = 10;  // zona morta do controle
 // Pino de controle em HIGH: 255 (menor velocidade) a 0 (maior velocidade)
 // Pino de controle em LOW: 0 (menor velocidade) a 255 (maior velocidade)
 
-const int minPWM = 0, maxPWM = 255;
+const int minPWM = 0, maxPWM = 200;
 
 #endif
