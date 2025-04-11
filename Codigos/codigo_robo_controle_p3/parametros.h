@@ -28,6 +28,6 @@ const int32_t toleranciaAnalogico = 10;  // zona morta do controle
 // Pino de controle em HIGH: 255 (menor velocidade) a 0 (maior velocidade)
 // Pino de controle em LOW: 0 (menor velocidade) a 255 (maior velocidade)
 
-const int minPWM = 0, maxPWM = 200;  // valores limite para o PWM da ESP32
+const int minPWM = 0, maxPWM = 255;  // valores limite para o PWM da ESP32
 
 #endif
