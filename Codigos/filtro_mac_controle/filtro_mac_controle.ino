@@ -11,7 +11,7 @@
 #include <uni.h>  // inclusão da biblioteca que implementa o filtro
 
 // Substitua o texto entre aspas pelo endereço MAC do seu controle.
-static const char* endereco_mac_controle_1 = "98:b6:a7:7e:3b:f9";
+static const char* endereco_mac_controle_1 = "98:B6:24:15:0E:6F";
 
 void setup() {
 
@@ -26,7 +26,7 @@ void setup() {
   uni_bt_allowlist_add_addr(endereco_1);
 
   // Desabilita lista de permissão.
-  // uni_bt_allowlist_set_enabled(false);
+  //uni_bt_allowlist_set_enabled(false);
 
   // Habilita lista de permissão.
   uni_bt_allowlist_set_enabled(true);
