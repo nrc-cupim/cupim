@@ -12,6 +12,7 @@ void onConnectedController(ControllerPtr ctl) {
       myControllers[i] = ctl;
       foundEmptySlot = true;
 
+      // Mostra o endereço MAC do controle na Serial
       uint8_t addr[6];
       for (int i = 0; i < 6; i++)
         addr[i] = ctl->getProperties().btaddr[i];
@@ -40,6 +41,8 @@ void processControllers() {
   for (auto myController : myControllers) {
     if (myController && myController->isConnected() && myController->hasData()) {
       if (myController->isGamepad()) {
+
+	// Exibe leitura dos valores do controle na Serial
         Serial.printf(
           "idx=%d, dpad: 0x%02x, buttons: 0x%04x, axis L: %4d, %4d, axis R: %4d, %4d, brake: %4d, throttle: %4d, "
           "misc: 0x%02x, gyro x:%6d y:%6d z:%6d, accel x:%6d y:%6d z:%6d\n",
