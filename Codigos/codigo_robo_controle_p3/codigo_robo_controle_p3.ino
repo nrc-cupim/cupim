@@ -75,69 +75,83 @@ void processControllers() {
       /* A partir daqui inicia-se a lógica de funcionamento do robô.
          Qualquer alteração / nova implementação deve ser feita aqui. */
 
-      uint16_t estadoMiscButtons = myController->miscButtons();
-
       // Se SELECT for presionado, desliga robô.
-      if (estadoMiscButtons == 0x02) {
+      if (myController->miscSelect()) {
         roboLigado = false;
-        Serial.println("Robo desligado");
+        Serial.println("Robo desligado.");
       }
 
       // Se START for presionado, liga robô.
-      else if (estadoMiscButtons == 0x04) {
+      else if (myController->miscStart()) {
         roboLigado = true;
-        Serial.println("Robo iniciado");
+        Serial.println("Robo ligado.");
       }
 
       if (roboLigado) {
 
-        /* --------------------- Lógica de funcionamento e inversão de giro da arma --------------------- */
+        /* --------------------- Lógica de funcionamento da arma --------------------- */
 
-        uint16_t botoesPressionados = myController->buttons();
+        // Se BOLINHA for pressionado, roda arma para um lado.
+        if (myController->b()) {
+          Serial.print("Arma Sentido 1\n");
+          analogWrite(PINO_1_ARMA1, 0);
+          analogWrite(PINO_2_ARMA1, MAX_PWM);
+          analogWrite(PINO_1_ARMA2, MAX_PWM);
+          analogWrite(PINO_2_ARMA2, 0);
+        }
+
+        // Se QUADRADO for pressionado, roda arma para o outro lado.
+        if (myController->x()) {
+          Serial.print("Arma Sentido 2\n");
+          analogWrite(PINO_1_ARMA1, MAX_PWM);
+          analogWrite(PINO_2_ARMA1, 0);
+          analogWrite(PINO_1_ARMA2, 0);
+          analogWrite(PINO_2_ARMA2, MAX_PWM);
+        }
 
         // Se TRIÂNGULO for presionado, desliga motores da arma.
-        if (botoesPressionados == 0x0008) {
+        if (myController->y()) {
           Serial.print("Arma desligada\n");
-
           analogWrite(PINO_1_ARMA1, 0);
           analogWrite(PINO_2_ARMA1, 0);
-
           analogWrite(PINO_1_ARMA2, 0);
           analogWrite(PINO_2_ARMA2, 0);
-        }
-
-        //Se BOLINHA for pressionado, roda arma para um lado
-        if (botoesPressionados == 0x0002) {
-          Serial.print("Arma Sentido 1\n");
-
-          analogWrite(PINO_1_ARMA1, 0);
-          analogWrite(PINO_2_ARMA1, maxPWM);
-
-          analogWrite(PINO_1_ARMA2, maxPWM);  // para rodar pro outro lado
-          analogWrite(PINO_2_ARMA2, 0);
-        }
-
-        // Se QUADRADO for pressionado, roda arma para o outro lado
-        else if (botoesPressionados == 0x0004) {
-          Serial.print("Arma Sentido 2\n");
-
-          analogWrite(PINO_1_ARMA1, maxPWM);
-          analogWrite(PINO_2_ARMA1, 0);
-
-          analogWrite(PINO_1_ARMA2, 0);  // para rodar pro outro lado
-          analogWrite(PINO_2_ARMA2, maxPWM);
         }
 
         /* ----------------- Lógica de inversão dos analógicos de movimentação ----------------- */
 
         // Se L1 for pressionado, locomoção Direito V - Esquerdo H
-        if (botoesPressionados == 0x0010) {
+        if (myController->l1()) {
           direitoVesquerdoH = true, direitoHesquerdoV = false;
         }
 
         // Se R1 for pressionado, locomoção Direito H - Esquerdo V
-        else if (botoesPressionados == 0x0020) {
+        if (myController->r1()) {
           direitoVesquerdoH = false, direitoHesquerdoV = true;
+        }
+
+        /* ----------------- Lógica de inversão de giro da movimentação ----------------- */
+
+        uint8_t leituraSetinhas = myController->dpad();
+
+        // Cada SETINHA representa uma configuração de pinos para os motores
+        switch (leituraSetinhas) {
+          case 0x01:
+            sentidoMotorEsquerdo = PINO_1_MOTOR_ESQUERDO, velocidadeMotorEsquerdo = PINO_2_MOTOR_ESQUERDO;
+            sentidoMotorDireito = PINO_1_MOTOR_DIREITO, velocidadeMotorDireito = PINO_2_MOTOR_DIREITO;
+            break;
+          case 0x02:
+            sentidoMotorEsquerdo = PINO_1_MOTOR_ESQUERDO, velocidadeMotorEsquerdo = PINO_2_MOTOR_ESQUERDO;
+            sentidoMotorDireito = PINO_2_MOTOR_DIREITO, velocidadeMotorDireito = PINO_1_MOTOR_DIREITO;
+            break;
+          case 0x04:
+            sentidoMotorEsquerdo = PINO_2_MOTOR_ESQUERDO, velocidadeMotorEsquerdo = PINO_1_MOTOR_ESQUERDO;
+            sentidoMotorDireito = PINO_1_MOTOR_DIREITO, velocidadeMotorDireito = PINO_2_MOTOR_DIREITO;
+            break;
+          case 0x08:
+            sentidoMotorEsquerdo = PINO_2_MOTOR_ESQUERDO, velocidadeMotorEsquerdo = PINO_1_MOTOR_ESQUERDO;
+            sentidoMotorDireito = PINO_2_MOTOR_DIREITO, velocidadeMotorDireito = PINO_1_MOTOR_DIREITO;
+            break;
         }
 
         /* ----------------- Lógica de funcionamento da movimentação ----------------- */
@@ -146,148 +160,116 @@ void processControllers() {
 
         if (direitoVesquerdoH) {
           // Lê valor em Y do analógico direito (R-right).
-          valorAnalogicoV = -myController->axisRY();
+          valorAnalogicoV = myController->axisRY();
 
           // Lê valor em X do analógico esquerdo (L-left).
           valorAnalogicoH = myController->axisX();
         }
 
-        if (direitoHesquerdoV){
+        if (direitoHesquerdoV) {
           // Lê valor em X do analógico direito (R-right).
           valorAnalogicoH = myController->axisRX();
 
           // Lê valor em Y do analógico esquerdo (L-left).
-          valorAnalogicoV = -myController->axisY();
+          valorAnalogicoV = myController->axisY();
         }
 
         // Exibe valores no monitor serial.
-        Serial.print("Y analogico R: ");
-        Serial.println(valorAnalogicoV);
+        // Serial.print("Y analogico R: ");
+        // Serial.println(valorAnalogicoV);
 
-        Serial.print("X analogico L: ");
-        Serial.println(valorAnalogicoH);
+        // Serial.print("X analogico L: ");
+        // Serial.println(valorAnalogicoH);
 
         int pwmMotorDireito1, pwmMotorDireito2, pwmMotorEsquerdo1, pwmMotorEsquerdo2;
 
-        if (valorAnalogicoV > (centerAnalogR_Y + toleranciaAnalogico)) {
+        // Analógico Y movimentado para trás
+        if (valorAnalogicoV > (PARADO_JOYSTICK_Y + TOLERANCIA_JOYSTICK)) {
+          pwmMotorDireito1 = MIN_PWM;
+          pwmMotorEsquerdo2 = MIN_PWM;
 
-          pwmMotorDireito1 = maxPWM;
-          pwmMotorEsquerdo1 = maxPWM;
-
-          if (valorAnalogicoH > (centerAnalogL_X + toleranciaAnalogico)) {
-
+          // Analógico X movimentado para direita
+          if (valorAnalogicoH > (PARADO_JOYSTICK_X + TOLERANCIA_JOYSTICK)) {
             pwmMotorDireito2 = map(valorAnalogicoV - valorAnalogicoH,
-                                   centerAnalogR_Y - maxAnalogL_X,
-                                   maxAnalogR_Y - centerAnalogL_X,
-                                   maxPWM,
-                                   minPWM);
-
-            pwmMotorEsquerdo2 = map(valorAnalogicoV + valorAnalogicoH,
-                                    centerAnalogR_Y + centerAnalogL_X,
-                                    maxAnalogR_Y + maxAnalogL_X,
-                                    maxPWM,
-                                    minPWM);
+                                   PARADO_JOYSTICK_Y - MAX_JOYSTICK_X,
+                                   MAX_JOYSTICK_Y - PARADO_JOYSTICK_X,
+                                   MIN_PWM, MAX_PWM);
+            pwmMotorEsquerdo1 = map(valorAnalogicoV, PARADO_JOYSTICK_Y, MAX_JOYSTICK_Y, MIN_PWM, MAX_PWM);
           }
 
-          else if (valorAnalogicoH < (centerAnalogL_X - toleranciaAnalogico)) {
-
-            pwmMotorDireito2 = map(valorAnalogicoV - valorAnalogicoH,
-                                   centerAnalogR_Y - centerAnalogL_X,
-                                   maxAnalogR_Y - minAnalogL_X,
-                                   maxPWM,
-                                   minPWM);
-
-            pwmMotorEsquerdo2 = map(valorAnalogicoV + valorAnalogicoH,
-                                    centerAnalogR_Y + minAnalogL_X,
-                                    maxAnalogR_Y + centerAnalogL_X,
-                                    maxPWM,
-                                    minPWM);
+          // Analógico X movimentado para esquerda
+          else if (valorAnalogicoH < (PARADO_JOYSTICK_X - TOLERANCIA_JOYSTICK)) {
+            pwmMotorDireito2 = map(valorAnalogicoV, PARADO_JOYSTICK_Y, MAX_JOYSTICK_Y, MIN_PWM, MAX_PWM);
+            pwmMotorEsquerdo1 = map(valorAnalogicoV + valorAnalogicoH,
+                                    PARADO_JOYSTICK_Y + MIN_JOYSTICK_X,
+                                    MAX_JOYSTICK_Y + PARADO_JOYSTICK_X,
+                                    MIN_PWM, MAX_PWM);
           }
 
+          // Analógico X não movimentado
           else {
-            pwmMotorDireito2 = map(valorAnalogicoV, centerAnalogR_Y, maxAnalogR_Y, maxPWM, minPWM);
-            pwmMotorEsquerdo2 = map(valorAnalogicoV, centerAnalogR_Y, maxAnalogR_Y, maxPWM, minPWM);
+            pwmMotorDireito2 = map(valorAnalogicoV, PARADO_JOYSTICK_Y, MAX_JOYSTICK_Y, MIN_PWM, MAX_PWM);
+            pwmMotorEsquerdo1 = map(valorAnalogicoV, PARADO_JOYSTICK_Y, MAX_JOYSTICK_Y, MIN_PWM, MAX_PWM);
           }
         }
 
-        else if (valorAnalogicoV < (centerAnalogR_Y - toleranciaAnalogico)) {
+        // Analógico Y movimentado para frente
+        else if (valorAnalogicoV < (PARADO_JOYSTICK_Y - TOLERANCIA_JOYSTICK)) {
+          pwmMotorDireito2 = MIN_PWM;
+          pwmMotorEsquerdo1 = MIN_PWM;
 
-          pwmMotorDireito1 = minPWM;
-          pwmMotorEsquerdo1 = minPWM;
-
-          if (valorAnalogicoH > (centerAnalogL_X + toleranciaAnalogico)) {
-            pwmMotorDireito2 = map(valorAnalogicoH + valorAnalogicoV,
-                                   centerAnalogL_X + minAnalogL_X,
-                                   maxAnalogL_X + centerAnalogR_Y,
-                                   minPWM,
-                                   maxPWM);
-
-            pwmMotorEsquerdo2 = map(valorAnalogicoH - valorAnalogicoV,
-                                    centerAnalogL_X - centerAnalogR_Y,
-                                    maxAnalogL_X - minAnalogR_Y,
-                                    minPWM,
-                                    maxPWM);
+          // Analógico X movimentado para direita
+          if (valorAnalogicoH > (PARADO_JOYSTICK_X + TOLERANCIA_JOYSTICK)) {
+            pwmMotorDireito1 = map(valorAnalogicoV + valorAnalogicoH,
+                                   MIN_JOYSTICK_Y + PARADO_JOYSTICK_X,
+                                   PARADO_JOYSTICK_Y + MAX_JOYSTICK_X,
+                                   MAX_PWM, MIN_PWM);
+            pwmMotorEsquerdo2 = map(valorAnalogicoV, MIN_JOYSTICK_Y, PARADO_JOYSTICK_Y, MAX_PWM, MIN_PWM);
           }
 
-          else if (valorAnalogicoH < (centerAnalogL_X - toleranciaAnalogico)) {
-            pwmMotorDireito2 = map(valorAnalogicoH + valorAnalogicoV,
-                                   centerAnalogL_X + centerAnalogR_Y,
-                                   minAnalogL_X + minAnalogR_Y,
-                                   minPWM,
-                                   maxPWM);
-
-            pwmMotorEsquerdo2 = map(valorAnalogicoH - valorAnalogicoV,
-                                    minAnalogL_X - centerAnalogR_Y,
-                                    centerAnalogL_X - minAnalogR_Y,
-                                    minPWM,
-                                    maxPWM);
+          // Analógico X movimentado para esquerda
+          else if (valorAnalogicoH < (PARADO_JOYSTICK_X - TOLERANCIA_JOYSTICK)) {
+            pwmMotorDireito1 = map(valorAnalogicoV, MIN_JOYSTICK_Y, PARADO_JOYSTICK_Y, MAX_PWM, MIN_PWM);
+            pwmMotorEsquerdo2 = map(valorAnalogicoV - valorAnalogicoH,
+                                    MIN_JOYSTICK_Y - PARADO_JOYSTICK_X,
+                                    PARADO_JOYSTICK_Y - MIN_JOYSTICK_X,
+                                    MIN_PWM, MAX_PWM);
           }
 
+          // Analógico X não movimentado
           else {
-            pwmMotorDireito2 = map(valorAnalogicoV, centerAnalogR_Y, minAnalogR_Y, minPWM, maxPWM);
-            pwmMotorEsquerdo2 = map(valorAnalogicoV, centerAnalogR_Y, minAnalogR_Y, minPWM, maxPWM);
+            pwmMotorDireito1 = map(valorAnalogicoV, MIN_JOYSTICK_Y, PARADO_JOYSTICK_Y, MAX_PWM, MIN_PWM);
+            pwmMotorEsquerdo2 = map(valorAnalogicoV, MIN_JOYSTICK_Y, PARADO_JOYSTICK_Y, MAX_PWM, MIN_PWM);
           }
         }
 
+        // Analógico Y não movimentado
         else {
 
-          if (valorAnalogicoH > (centerAnalogL_X + toleranciaAnalogico)) {
-            pwmMotorDireito1 = minPWM;
-            pwmMotorEsquerdo1 = maxPWM;
-            pwmMotorDireito2 = map(valorAnalogicoH, centerAnalogL_X, maxAnalogL_X, minPWM, maxPWM);
-            pwmMotorEsquerdo2 = map(valorAnalogicoH, centerAnalogL_X, maxAnalogL_X, maxPWM, minPWM);
+          // Analógico X movimentado para direita
+          if (valorAnalogicoH > (PARADO_JOYSTICK_X + TOLERANCIA_JOYSTICK)) {
+            pwmMotorDireito1 = MIN_PWM;
+            pwmMotorEsquerdo1 = MIN_PWM;
+            pwmMotorDireito2 = map(valorAnalogicoH, PARADO_JOYSTICK_X, MAX_JOYSTICK_X, MIN_PWM, MAX_PWM);
+            pwmMotorEsquerdo2 = map(valorAnalogicoH, PARADO_JOYSTICK_X, MAX_JOYSTICK_X, MIN_PWM, MAX_PWM);
           }
 
-          else if (valorAnalogicoH < (centerAnalogL_X - toleranciaAnalogico)) {
-            pwmMotorDireito1 = maxPWM;
-            pwmMotorEsquerdo1 = minPWM;
-            pwmMotorDireito2 = map(valorAnalogicoH, centerAnalogL_X, minAnalogL_X, maxPWM, minPWM);
-            pwmMotorEsquerdo2 = map(valorAnalogicoH, centerAnalogL_X, minAnalogL_X, minPWM, maxPWM);
+          // Analógico X movimentado para esquerda
+          else if (valorAnalogicoH < (PARADO_JOYSTICK_X - TOLERANCIA_JOYSTICK)) {
+            pwmMotorDireito1 = map(valorAnalogicoH, MIN_JOYSTICK_X, PARADO_JOYSTICK_X, MAX_PWM, MIN_PWM);
+            pwmMotorEsquerdo1 = map(valorAnalogicoH, MIN_JOYSTICK_X, PARADO_JOYSTICK_X, MAX_PWM, MIN_PWM);
+            pwmMotorDireito2 = MIN_PWM;
+            pwmMotorEsquerdo2 = MIN_PWM;
           }
 
+          // Analógico X não movimentado
           else {
-            pwmMotorDireito1 = minPWM;
-            pwmMotorEsquerdo1 = minPWM;
-            pwmMotorDireito2 = minPWM;
-            pwmMotorEsquerdo2 = minPWM;
+            pwmMotorDireito1 = MIN_PWM;
+            pwmMotorEsquerdo1 = MIN_PWM;
+            pwmMotorDireito2 = MIN_PWM;
+            pwmMotorEsquerdo2 = MIN_PWM;
           }
         }
-
-        /* ----------------- Lógica de inversão de giro da movimentação ----------------- */
-
-        uint8_t leituraSetinhas = myController->dpad();
-
-        // Se seta cima ou seta baixo forem pressionadas, inverte sentido motor direito
-        if (leituraSetinhas == 0x01)
-          sentidoMotorDireito = PINO_1_MOTOR_DIREITO, velocidadeMotorDireito = PINO_2_MOTOR_DIREITO;
-        else if (leituraSetinhas == 0x02)
-          sentidoMotorDireito = PINO_2_MOTOR_DIREITO, velocidadeMotorDireito = PINO_1_MOTOR_DIREITO;
-
-        // Se seta esquerda ou seta direita forem pressionadas, inverte sentido motor esquerdo
-        if (leituraSetinhas == 0x04)
-          sentidoMotorEsquerdo = PINO_1_MOTOR_ESQUERDO, velocidadeMotorEsquerdo = PINO_2_MOTOR_ESQUERDO;
-        else if (leituraSetinhas == 0x08)
-          sentidoMotorEsquerdo = PINO_2_MOTOR_ESQUERDO, velocidadeMotorEsquerdo = PINO_1_MOTOR_ESQUERDO;
 
         Serial.print("PWM Direito 1: ");
         Serial.println(pwmMotorDireito1);
@@ -295,6 +277,8 @@ void processControllers() {
         Serial.println(pwmMotorDireito2);
         analogWrite(sentidoMotorDireito, pwmMotorDireito1);
         analogWrite(velocidadeMotorDireito, pwmMotorDireito2);
+
+        Serial.println();
 
         Serial.print("PWM Esquerdo 1: ");
         Serial.println(pwmMotorEsquerdo1);
@@ -335,8 +319,8 @@ void setup() {
   pinMode(PINO_1_MOTOR_DIREITO, OUTPUT);
   pinMode(PINO_2_MOTOR_DIREITO, OUTPUT);
 
-  sentidoMotorEsquerdo = PINO_1_MOTOR_ESQUERDO, velocidadeMotorEsquerdo = PINO_2_MOTOR_ESQUERDO;
-  sentidoMotorDireito = PINO_1_MOTOR_DIREITO, velocidadeMotorDireito = PINO_2_MOTOR_DIREITO;
+  sentidoMotorEsquerdo = PINO_2_MOTOR_ESQUERDO, velocidadeMotorEsquerdo = PINO_1_MOTOR_ESQUERDO;
+  sentidoMotorDireito = PINO_2_MOTOR_DIREITO, velocidadeMotorDireito = PINO_1_MOTOR_DIREITO;
 
   direitoVesquerdoH = true, direitoHesquerdoV = false;
 

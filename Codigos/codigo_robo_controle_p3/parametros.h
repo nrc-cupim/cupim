@@ -20,14 +20,18 @@
 // Cima - Baixo +
 // Direita + Esquerda -
 
-const int32_t minAnalogR_Y = -508, centerAnalogR_Y = 0, maxAnalogR_Y = 512;  // Valores reais * -1
-const int32_t minAnalogL_X = -512, centerAnalogL_X = 0, maxAnalogL_X = 508;
+// Ambos os analógicos (E e D) tem o mesmo comportamento, retornam os mesmos valores para os mesmos sentidos / direções
+// Ambas as direções retornam a mesma faixa de valores (-512 a 508, tanto na vertical quanto horizontal)
+// Os valores retornados para cada um dos sentidos em uma mesma direção (esquerda/direita ou cima/baixo) não são simétricos
 
-const int32_t toleranciaAnalogico = 10;  // zona morta do controle
+const int32_t MIN_JOYSTICK_Y = -512, PARADO_JOYSTICK_Y = 0, MAX_JOYSTICK_Y = 508;
+const int32_t MIN_JOYSTICK_X = -512, PARADO_JOYSTICK_X = 0, MAX_JOYSTICK_X = 508;
+
+const int32_t TOLERANCIA_JOYSTICK = 5;  // zona morta do controle
 
 // Pino de controle em HIGH: 255 (menor velocidade) a 0 (maior velocidade)
 // Pino de controle em LOW: 0 (menor velocidade) a 255 (maior velocidade)
 
-const int minPWM = 0, maxPWM = 255;  // valores limite para o PWM da ESP32
+const int MIN_PWM = 0, MAX_PWM = 255;  // valores limite para o PWM da ESP32
 
 #endif
