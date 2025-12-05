@@ -10,6 +10,7 @@ bool roboLigado;
 int sentidoMotorEsquerdo, velocidadeMotorEsquerdo;
 int sentidoMotorDireito, velocidadeMotorDireito;
 
+// Variáveis para inversão dos analógicos de movimentação
 bool direitoVesquerdoH, direitoHesquerdoV;
 
 void desligaRobo() {
@@ -136,19 +137,19 @@ void processControllers() {
 
         // Cada SETINHA representa uma configuração de pinos para os motores
         switch (leituraSetinhas) {
-          case 0x01:
+          case 0x01: // cima
             sentidoMotorEsquerdo = PINO_1_MOTOR_ESQUERDO, velocidadeMotorEsquerdo = PINO_2_MOTOR_ESQUERDO;
             sentidoMotorDireito = PINO_1_MOTOR_DIREITO, velocidadeMotorDireito = PINO_2_MOTOR_DIREITO;
             break;
-          case 0x02:
+          case 0x02: // baixo
             sentidoMotorEsquerdo = PINO_1_MOTOR_ESQUERDO, velocidadeMotorEsquerdo = PINO_2_MOTOR_ESQUERDO;
             sentidoMotorDireito = PINO_2_MOTOR_DIREITO, velocidadeMotorDireito = PINO_1_MOTOR_DIREITO;
             break;
-          case 0x04:
+          case 0x04: // direita
             sentidoMotorEsquerdo = PINO_2_MOTOR_ESQUERDO, velocidadeMotorEsquerdo = PINO_1_MOTOR_ESQUERDO;
             sentidoMotorDireito = PINO_1_MOTOR_DIREITO, velocidadeMotorDireito = PINO_2_MOTOR_DIREITO;
             break;
-          case 0x08:
+          case 0x08: // esquerda
             sentidoMotorEsquerdo = PINO_2_MOTOR_ESQUERDO, velocidadeMotorEsquerdo = PINO_1_MOTOR_ESQUERDO;
             sentidoMotorDireito = PINO_2_MOTOR_DIREITO, velocidadeMotorDireito = PINO_1_MOTOR_DIREITO;
             break;
@@ -336,3 +337,4 @@ void loop() {
   if (dataUpdated)
     processControllers();
 }
+

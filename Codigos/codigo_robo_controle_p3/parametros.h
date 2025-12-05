@@ -29,9 +29,6 @@ const int32_t MIN_JOYSTICK_X = -512, PARADO_JOYSTICK_X = 0, MAX_JOYSTICK_X = 508
 
 const int32_t TOLERANCIA_JOYSTICK = 5;  // zona morta do controle
 
-// Pino de controle em HIGH: 255 (menor velocidade) a 0 (maior velocidade)
-// Pino de controle em LOW: 0 (menor velocidade) a 255 (maior velocidade)
-
 const int MIN_PWM = 0, MAX_PWM = 255;  // valores limite para o PWM da ESP32
 
 #endif
