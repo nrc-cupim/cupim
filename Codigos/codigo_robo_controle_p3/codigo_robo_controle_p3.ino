@@ -2,7 +2,7 @@
 #include "parametros.h"
 
 ControllerPtr myControllers[BP32_MAX_GAMEPADS];
-bool roboLigado;
+bool roboLigado, configsTravadas;
 
 /* Foi necessário utilizar essas variáveis para permitir a 
    inversão do sentido de giro de cada motor de locomoção */
@@ -119,40 +119,52 @@ void processControllers() {
           analogWrite(PINO_2_ARMA2, 0);
         }
 
-        /* ----------------- Lógica de inversão dos analógicos de movimentação ----------------- */
+        /* ----------------- Lógica de trava das configurações ----------------- */
 
-        // Se L1 for pressionado, locomoção Direito V - Esquerdo H
-        if (myController->l1()) {
-          direitoVesquerdoH = true, direitoHesquerdoV = false;
+        if (myController->thumbL() && myController->thumbR()) {
+          configsTravadas = !configsTravadas;
+          digitalWrite(PINO_LED_INTERNO, configsTravadas);
+          Serial.println(configsTravadas);
         }
 
-        // Se R1 for pressionado, locomoção Direito H - Esquerdo V
-        if (myController->r1()) {
-          direitoVesquerdoH = false, direitoHesquerdoV = true;
-        }
+        // Trava pra evitar de alterar as configurações do controle durante a partida
+        if (!configsTravadas) {
 
-        /* ----------------- Lógica de inversão de giro da movimentação ----------------- */
+          /* ----------------- Lógica de inversão dos analógicos de movimentação ----------------- */
 
-        uint8_t leituraSetinhas = myController->dpad();
+          // Se L1 for pressionado, locomoção Direito V - Esquerdo H
+          if (myController->l1()) {
+            direitoVesquerdoH = true, direitoHesquerdoV = false;
+          }
 
-        // Cada SETINHA representa uma configuração de pinos para os motores
-        switch (leituraSetinhas) {
-          case 0x01: // cima
-            sentidoMotorEsquerdo = PINO_1_MOTOR_ESQUERDO, velocidadeMotorEsquerdo = PINO_2_MOTOR_ESQUERDO;
-            sentidoMotorDireito = PINO_1_MOTOR_DIREITO, velocidadeMotorDireito = PINO_2_MOTOR_DIREITO;
-            break;
-          case 0x02: // baixo
-            sentidoMotorEsquerdo = PINO_1_MOTOR_ESQUERDO, velocidadeMotorEsquerdo = PINO_2_MOTOR_ESQUERDO;
-            sentidoMotorDireito = PINO_2_MOTOR_DIREITO, velocidadeMotorDireito = PINO_1_MOTOR_DIREITO;
-            break;
-          case 0x04: // direita
-            sentidoMotorEsquerdo = PINO_2_MOTOR_ESQUERDO, velocidadeMotorEsquerdo = PINO_1_MOTOR_ESQUERDO;
-            sentidoMotorDireito = PINO_1_MOTOR_DIREITO, velocidadeMotorDireito = PINO_2_MOTOR_DIREITO;
-            break;
-          case 0x08: // esquerda
-            sentidoMotorEsquerdo = PINO_2_MOTOR_ESQUERDO, velocidadeMotorEsquerdo = PINO_1_MOTOR_ESQUERDO;
-            sentidoMotorDireito = PINO_2_MOTOR_DIREITO, velocidadeMotorDireito = PINO_1_MOTOR_DIREITO;
-            break;
+          // Se R1 for pressionado, locomoção Direito H - Esquerdo V
+          if (myController->r1()) {
+            direitoVesquerdoH = false, direitoHesquerdoV = true;
+          }
+
+          /* ----------------- Lógica de inversão de giro da movimentação ----------------- */
+
+          uint8_t leituraSetinhas = myController->dpad();
+
+          // Cada SETINHA representa uma configuração de pinos para os motores
+          switch (leituraSetinhas) {
+            case 0x01:  // cima
+              sentidoMotorEsquerdo = PINO_1_MOTOR_ESQUERDO, velocidadeMotorEsquerdo = PINO_2_MOTOR_ESQUERDO;
+              sentidoMotorDireito = PINO_1_MOTOR_DIREITO, velocidadeMotorDireito = PINO_2_MOTOR_DIREITO;
+              break;
+            case 0x02:  // baixo
+              sentidoMotorEsquerdo = PINO_1_MOTOR_ESQUERDO, velocidadeMotorEsquerdo = PINO_2_MOTOR_ESQUERDO;
+              sentidoMotorDireito = PINO_2_MOTOR_DIREITO, velocidadeMotorDireito = PINO_1_MOTOR_DIREITO;
+              break;
+            case 0x04:  // direita
+              sentidoMotorEsquerdo = PINO_2_MOTOR_ESQUERDO, velocidadeMotorEsquerdo = PINO_1_MOTOR_ESQUERDO;
+              sentidoMotorDireito = PINO_1_MOTOR_DIREITO, velocidadeMotorDireito = PINO_2_MOTOR_DIREITO;
+              break;
+            case 0x08:  // esquerda
+              sentidoMotorEsquerdo = PINO_2_MOTOR_ESQUERDO, velocidadeMotorEsquerdo = PINO_1_MOTOR_ESQUERDO;
+              sentidoMotorDireito = PINO_2_MOTOR_DIREITO, velocidadeMotorDireito = PINO_1_MOTOR_DIREITO;
+              break;
+          }
         }
 
         /* ----------------- Lógica de funcionamento da movimentação ----------------- */
@@ -304,7 +316,10 @@ void setup() {
   BP32.enableVirtualDevice(false);
 
   // Desparea os controles que haviam sido conectados anteriormente.
-  BP32.forgetBluetoothKeys();
+  // BP32.forgetBluetoothKeys();
+
+  pinMode(PINO_LED_INTERNO, OUTPUT);
+  digitalWrite(PINO_LED_INTERNO, LOW);
 
   // Configura pinos da ESP32 para controle dos motores de arma.
   pinMode(PINO_1_ARMA1, OUTPUT);
@@ -324,6 +339,7 @@ void setup() {
   sentidoMotorDireito = PINO_2_MOTOR_DIREITO, velocidadeMotorDireito = PINO_1_MOTOR_DIREITO;
 
   direitoVesquerdoH = true, direitoHesquerdoV = false;
+  configsTravadas = false;
 
   // Desliga movimentação e arma do robô.
   desligaRobo();
@@ -337,4 +353,3 @@ void loop() {
   if (dataUpdated)
     processControllers();
 }
-

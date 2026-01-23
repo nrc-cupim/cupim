@@ -4,6 +4,8 @@
 
 #include <Arduino.h>
 
+#define PINO_LED_INTERNO 2
+
 #define PINO_1_ARMA2 13
 #define PINO_2_ARMA2 12
 
