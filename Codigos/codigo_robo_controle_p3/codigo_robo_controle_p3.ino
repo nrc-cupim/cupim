@@ -319,7 +319,6 @@ void setup() {
   // BP32.forgetBluetoothKeys();
 
   pinMode(PINO_LED_INTERNO, OUTPUT);
-  digitalWrite(PINO_LED_INTERNO, LOW);
 
   // Configura pinos da ESP32 para controle dos motores de arma.
   pinMode(PINO_1_ARMA1, OUTPUT);
@@ -343,6 +342,9 @@ void setup() {
 
   // Desliga movimentação e arma do robô.
   desligaRobo();
+
+  // Desliga LED de indicação de trava
+  digitalWrite(PINO_LED_INTERNO, LOW);
 }
 
 void loop() {
